@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,20 +13,30 @@
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #3b82f6; text-align: center; }
         .card h3 { margin: 0 0 10px 0; color: #4b5563; font-size: 1.1rem; }
         .balance { font-size: 1.8rem; font-weight: bold; color: #10b981; }
+        .timer-box { background: #fee2e2; border-left: 5px solid #ef4444; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 25px; }
+        .timer-title { margin: 0 0 5px 0; color: #991b1b; font-weight: 600; }
+        .timer-clock { font-size: 1.6rem; font-weight: bold; color: #b91c1c; }
         table { width: 100%; background: white; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         th, td { padding: 14px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { background-color: #1e3a8a; color: white; font-weight: 600; }
         tr:hover { background-color: #f8fafc; }
-        .badge { background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .badge-deposit { background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .badge-withdrawal { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🏦 Family Bank Live Dashboard</h1>
         
-        <!-- Balances Grid Section -->
+        <!-- Live Built-in 2-Minute Timer -->
+        <div class="timer-box">
+            <div class="timer-title">⏱️ Session Timer</div>
+            <div id="countdown" class="timer-clock">02:00</div>
+        </div>
+
+        <!-- Balances Grid Section (Automatically updated with Maryam's withdrawal) -->
         <div class="grid">
-            <div class="card"><h3>Maryam Sajid</h3><div class="balance">1,000,000 PKR</div></div>
+            <div class="card"><h3>Maryam Sajid</h3><div class="balance" style="color: #2563eb;">975,000 PKR</div></div>
             <div class="card"><h3>Zainab Sajid</h3><div class="balance">1,000,000 PKR</div></div>
             <div class="card"><h3>Fatima Sajid</h3><div class="balance">1,000,000 PKR</div></div>
             <div class="card"><h3>Saad Sajid</h3><div class="balance">1,000,000 PKR</div></div>
@@ -46,14 +57,32 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>2026-09-18</td><td>Maryam Sajid</td><td><span class="badge">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
-                <tr><td>2026-09-18</td><td>Zainab Sajid</td><td><span class="badge">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
-                <tr><td>2026-09-18</td><td>Fatima Sajid</td><td><span class="badge">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
-                <tr><td>2026-09-18</td><td>Saad Sajid</td><td><span class="badge">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
-                <tr><td>2026-09-18</td><td>Yahya Sajid</td><td><span class="badge">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
-                <tr><td>2026-09-18</td><td>Abubakar Sajid</td><td><span class="badge">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
+                <!-- New Demo Withdrawal Entry Included Below -->
+                <tr><td>2026-09-18</td><td>Maryam Sajid</td><td><span class="badge-withdrawal">Withdrawal</span></td><td style="color: #dc2626;">-25,000 PKR</td><td>Family Shopping Expense</td></tr>
+                <tr><td>2026-09-18</td><td>Maryam Sajid</td><td><span class="badge-deposit">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
+                <tr><td>2026-09-18</td><td>Zainab Sajid</td><td><span class="badge-deposit">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
+                <tr><td>2026-09-18</td><td>Fatima Sajid</td><td><span class="badge-deposit">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
+                <tr><td>2026-09-18</td><td>Saad Sajid</td><td><span class="badge-deposit">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
+                <tr><td>2026-09-18</td><td>Yahya Sajid</td><td><span class="badge-deposit">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
+                <tr><td>2026-09-18</td><td>Abubakar Sajid</td><td><span class="badge-deposit">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
             </tbody>
         </table>
     </div>
+
+    <!-- Timer Script Logic -->
+    <script>
+        let time = 120; 
+        const display = document.getElementById('countdown');
+        setInterval(() => {
+            if (time > 0) {
+                time--;
+                let mins = Math.floor(time / 60).toString().padStart(2, '0');
+                let secs = (time % 60).toString().padStart(2, '0');
+                display.textContent = mins + ":" + secs;
+            } else {
+                display.textContent = "Time's Up!";
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
