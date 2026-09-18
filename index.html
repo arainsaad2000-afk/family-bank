@@ -13,17 +13,18 @@
         .card h3 { margin: 0 0 10px 0; color: #4b5563; font-size: 1.1rem; }
         .balance { font-size: 1.8rem; font-weight: bold; color: #10b981; }
         
-        /* Interactive Transaction Section Style */
         .action-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; border: 1px solid #e5e7eb; }
-        .action-box h2 { margin-top: 0; color: #1e3a8a; font-size: 1.4rem; }
-        .form-group { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; }
+        .action-box h2 { margin-top: 0; color: #1e3a8a; font-size: 1.4rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; }
+        .form-group { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; margin-top: 15px; }
         .form-group select, .form-group input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; flex: 1; min-width: 150px; }
-        .btn-container { display: flex; gap: 15px; }
-        .btn { padding: 12px 20px; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; flex: 1; transition: background 0.2s; }
+        .btn-container { display: flex; flex-wrap: wrap; gap: 15px; }
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; flex: 1; transition: background 0.2s; min-width: 140px; }
         .btn-deposit { background-color: #10b981; color: white; }
         .btn-deposit:hover { background-color: #059669; }
         .btn-withdraw { background-color: #ef4444; color: white; }
         .btn-withdraw:hover { background-color: #dc2626; }
+        .btn-transfer { background-color: #3b82f6; color: white; }
+        .btn-transfer:hover { background-color: #2563eb; }
 
         table { width: 100%; background: white; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         th, td { padding: 14px; text-align: left; border-bottom: 1px solid #e5e7eb; }
@@ -31,6 +32,7 @@
         tr:hover { background-color: #f8fafc; }
         .badge-deposit { background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
         .badge-withdrawal { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .badge-transfer { background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -47,11 +49,11 @@
             <div class="card"><h3>Abubakar Sajid</h3><div class="balance" id="bal-abubakar">1,000,000 PKR</div></div>
         </div>
 
-        <!-- NEW: Live Quick Transaction Section -->
+        <!-- Interactive Banking Operations -->
         <div class="action-box">
-            <h2>💸 Process Transaction</h2>
+            <h2>💸 Process Transaction or Transfer</h2>
             <div class="form-group">
-                <select id="memberSelect">
+                <select id="memberSelect" onchange="toggleTransferDropdown()">
                     <option value="maryam">Maryam Sajid</option>
                     <option value="zainab">Zainab Sajid</option>
                     <option value="fatima">Fatima Sajid</option>
@@ -59,12 +61,26 @@
                     <option value="yahya">Yahya Sajid</option>
                     <option value="abubakar">Abubakar Sajid</option>
                 </select>
+
+                <!-- Transfer To Target Dropdown -->
+                <select id="receiverSelect" style="display: none; border-color: #3b82f6;">
+                    <option value="" disabled selected>Transfer To...</option>
+                    <option value="maryam">Maryam Sajid</option>
+                    <option value="zainab">Zainab Sajid</option>
+                    <option value="fatima">Fatima Sajid</option>
+                    <option value="saad">Saad Sajid</option>
+                    <option value="yahya">Yahya Sajid</option>
+                    <option value="abubakar">Abubakar Sajid</option>
+                </select>
+
                 <input type="number" id="amountInput" placeholder="Amount (PKR)" min="1">
-                <input type="text" id="descInput" placeholder="Description (e.g., Toy, Snack)">
+                <input type="text" id="descInput" placeholder="Description / Note">
             </div>
             <div class="btn-container">
                 <button class="btn btn-deposit" onclick="handleTransaction('Deposit')">➕ Add Deposit</button>
                 <button class="btn btn-withdraw" onclick="handleTransaction('Withdrawal')">➖ Make Withdrawal</button>
+                <button class="btn btn-transfer" id="transferToggleBtn" onclick="enableTransferMode()">🔄 Open Transfer Mode</button>
+                <button class="btn btn-transfer" id="sendTransferBtn" style="display: none;" onclick="handleTransfer()">🚀 Send Transfer</button>
             </div>
         </div>
 
@@ -95,7 +111,23 @@
     <script>
         const balances = { maryam: 1000000, zainab: 1000000, fatima: 1000000, saad: 1000000, yahya: 1000000, abubakar: 1000000 };
 
+        function enableTransferMode() {
+            document.getElementById('receiverSelect').style.display = 'inline-block';
+            document.getElementById('sendTransferBtn').style.display = 'inline-block';
+            document.getElementById('transferToggleBtn').textContent = "❌ Cancel Transfer";
+            document.getElementById('transferToggleBtn').onclick = disableTransferMode;
+        }
+
+        function disableTransferMode() {
+            document.getElementById('receiverSelect').style.display = 'none';
+            document.getElementById('sendTransferBtn').style.display = 'none';
+            document.getElementById('transferToggleBtn').textContent = "🔄 Open Transfer Mode";
+            document.getElementById('transferToggleBtn').onclick = enableTransferMode;
+            document.getElementById('receiverSelect').selectedIndex = 0;
+        }
+
         function handleTransaction(type) {
+            disableTransferMode();
             const memberKey = document.getElementById('memberSelect').value;
             const memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
             const amount = parseInt(document.getElementById('amountInput').value);
@@ -108,28 +140,19 @@
             }
 
             if (type === 'Withdrawal') {
+                if(balances[memberKey] < amount) { alert("Insufficient funds!"); return; }
                 balances[memberKey] -= amount;
             } else {
                 balances[memberKey] += amount;
             }
 
-            // Update individual layout display
-            document.getElementById(`bal-${memberKey}`).textContent = balances[memberKey].toLocaleString() + " PKR";
-
-            // Add new row to table log
-            const tbody = document.getElementById('ledgerBody');
-            const row = document.createElement('tr');
-            const badgeClass = type === 'Deposit' ? 'badge-deposit' : 'badge-withdrawal';
-            const displayAmount = type === 'Withdrawal' ? `-${amount.toLocaleString()}` : amount.toLocaleString();
-            const colorStyle = type === 'Withdrawal' ? 'style="color: #dc2626;"' : '';
-
-            row.innerHTML = `<td>${today}</td><td>${memberName}</td><td><span class="${badgeClass}">${type}</span></td><td ${colorStyle}>${displayAmount} PKR</td><td>${desc}</td>`;
-            tbody.insertBefore(row, tbody.firstChild);
-
-            // Reset inputs
-            document.getElementById('amountInput').value = '';
-            document.getElementById('descInput').value = '';
+            updateUI(memberKey, memberName, type, amount, desc, today);
         }
-    </script>
-</body>
-</html>
+
+        function handleTransfer() {
+            const senderKey = document.getElementById('memberSelect').value;
+            const senderName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
+            const receiverKey = document.getElementById('receiverSelect').value;
+            const receiverName = document.getElementById('receiverSelect').options[document.getElementById('receiverSelect').selectedIndex].text;
+            const amount = parseInt(document.getElementById('amountInput').value);
+Use code with caution.const userDesc = document.getElementById('descInput').value;const today = new Date().toISOString().split('T')[0];if (!receiverKey) { alert("Please select a family member to transfer money to."); return; }if (senderKey === receiverKey) { alert("You cannot transfer money to yourself!"); return; }if (isNaN(amount) || amount <= 0) { alert("Please enter a valid amount."); return; }if (balances[senderKey] < amount) { alert("Insufficient funds for this transfer!"); return; }// Math operations for both accountsbalances[senderKey] -= amount;balances[receiverKey] += amount;// Update display balancesdocument.getElementById(bal-${senderKey}).textContent = balances[senderKey].toLocaleString() + " PKR";document.getElementById(bal-${receiverKey}).textContent = balances[receiverKey].toLocaleString() + " PKR";// Log descriptionconst finalDesc = userDesc ? ${userDesc} (Sent to ${receiverName}) : Transferred to ${receiverName};updateUI(senderKey, senderName, 'Transfer', amount, finalDesc, today);disableTransferMode();}function updateUI(key, name, type, amount, desc, date) {document.getElementById(bal-${key}).textContent = balances[key].toLocaleString() + " PKR";const tbody = document.getElementById('ledgerBody');const row = document.createElement('tr');let badgeClass = 'badge-deposit';let displayAmount = amount.toLocaleString();let colorStyle = '';if (type === 'Withdrawal' || type === 'Transfer') {badgeClass = type === 'Withdrawal' ? 'badge-withdrawal' : 'badge-transfer';displayAmount = -${amount.toLocaleString()};colorStyle = 'style="color: #dc2626;"';}row.innerHTML = <td>${date}</td><td>${name}</td><td><span class="${badgeClass}">${type}</span></td><td ${colorStyle}>${displayAmount} PKR</td><td>${desc}</td>;tbody.insertBefore(row, tbody.firstChild);document.getElementById('amountInput').value = '';document.getElementById('descInput').value = '';}
