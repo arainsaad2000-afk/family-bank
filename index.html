@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -9,13 +8,23 @@
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: 0 auto; }
         h1 { text-align: center; color: #1e3a8a; margin-bottom: 30px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 5px solid #3b82f6; text-align: center; }
         .card h3 { margin: 0 0 10px 0; color: #4b5563; font-size: 1.1rem; }
         .balance { font-size: 1.8rem; font-weight: bold; color: #10b981; }
-        .timer-box { background: #fee2e2; border-left: 5px solid #ef4444; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 25px; }
-        .timer-title { margin: 0 0 5px 0; color: #991b1b; font-weight: 600; }
-        .timer-clock { font-size: 1.6rem; font-weight: bold; color: #b91c1c; }
+        
+        /* Interactive Transaction Section Style */
+        .action-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 30px; border: 1px solid #e5e7eb; }
+        .action-box h2 { margin-top: 0; color: #1e3a8a; font-size: 1.4rem; }
+        .form-group { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; }
+        .form-group select, .form-group input { padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 1rem; flex: 1; min-width: 150px; }
+        .btn-container { display: flex; gap: 15px; }
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; flex: 1; transition: background 0.2s; }
+        .btn-deposit { background-color: #10b981; color: white; }
+        .btn-deposit:hover { background-color: #059669; }
+        .btn-withdraw { background-color: #ef4444; color: white; }
+        .btn-withdraw:hover { background-color: #dc2626; }
+
         table { width: 100%; background: white; border-collapse: collapse; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         th, td { padding: 14px; text-align: left; border-bottom: 1px solid #e5e7eb; }
         th { background-color: #1e3a8a; color: white; font-weight: 600; }
@@ -28,20 +37,35 @@
     <div class="container">
         <h1>🏦 Family Bank Live Dashboard</h1>
         
-        <!-- Live Built-in 2-Minute Timer -->
-        <div class="timer-box">
-            <div class="timer-title">⏱️ Session Timer</div>
-            <div id="countdown" class="timer-clock">02:00</div>
+        <!-- Live Balances Grid -->
+        <div class="grid">
+            <div class="card"><h3>Maryam Sajid</h3><div class="balance" id="bal-maryam">1,000,000 PKR</div></div>
+            <div class="card"><h3>Zainab Sajid</h3><div class="balance" id="bal-zainab">1,000,000 PKR</div></div>
+            <div class="card"><h3>Fatima Sajid</h3><div class="balance" id="bal-fatima">1,000,000 PKR</div></div>
+            <div class="card"><h3>Saad Sajid</h3><div class="balance" id="bal-saad">1,000,000 PKR</div></div>
+            <div class="card"><h3>Yahya Sajid</h3><div class="balance" id="bal-yahya">1,000,000 PKR</div></div>
+            <div class="card"><h3>Abubakar Sajid</h3><div class="balance" id="bal-abubakar">1,000,000 PKR</div></div>
         </div>
 
-        <!-- Balances Grid Section (Automatically updated with Maryam's withdrawal) -->
-        <div class="grid">
-            <div class="card"><h3>Maryam Sajid</h3><div class="balance" style="color: #2563eb;">975,000 PKR</div></div>
-            <div class="card"><h3>Zainab Sajid</h3><div class="balance">1,000,000 PKR</div></div>
-            <div class="card"><h3>Fatima Sajid</h3><div class="balance">1,000,000 PKR</div></div>
-            <div class="card"><h3>Saad Sajid</h3><div class="balance">1,000,000 PKR</div></div>
-            <div class="card"><h3>Yahya Sajid</h3><div class="balance">1,000,000 PKR</div></div>
-            <div class="card"><h3>Abubakar Sajid</h3><div class="balance">1,000,000 PKR</div></div>
+        <!-- NEW: Live Quick Transaction Section -->
+        <div class="action-box">
+            <h2>💸 Process Transaction</h2>
+            <div class="form-group">
+                <select id="memberSelect">
+                    <option value="maryam">Maryam Sajid</option>
+                    <option value="zainab">Zainab Sajid</option>
+                    <option value="fatima">Fatima Sajid</option>
+                    <option value="saad">Saad Sajid</option>
+                    <option value="yahya">Yahya Sajid</option>
+                    <option value="abubakar">Abubakar Sajid</option>
+                </select>
+                <input type="number" id="amountInput" placeholder="Amount (PKR)" min="1">
+                <input type="text" id="descInput" placeholder="Description (e.g., Toy, Snack)">
+            </div>
+            <div class="btn-container">
+                <button class="btn btn-deposit" onclick="handleTransaction('Deposit')">➕ Add Deposit</button>
+                <button class="btn btn-withdraw" onclick="handleTransaction('Withdrawal')">➖ Make Withdrawal</button>
+            </div>
         </div>
 
         <!-- Ledger Table Section -->
@@ -56,9 +80,7 @@
                     <th>Description</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- New Demo Withdrawal Entry Included Below -->
-                <tr><td>2026-09-18</td><td>Maryam Sajid</td><td><span class="badge-withdrawal">Withdrawal</span></td><td style="color: #dc2626;">-25,000 PKR</td><td>Family Shopping Expense</td></tr>
+            <tbody id="ledgerBody">
                 <tr><td>2026-09-18</td><td>Maryam Sajid</td><td><span class="badge-deposit">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
                 <tr><td>2026-09-18</td><td>Zainab Sajid</td><td><span class="badge-deposit">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
                 <tr><td>2026-09-18</td><td>Fatima Sajid</td><td><span class="badge-deposit">Deposit</span></td><td>1,000,000 PKR</td><td>Initial Credit</td></tr>
@@ -69,20 +91,45 @@
         </table>
     </div>
 
-    <!-- Timer Script Logic -->
+    <!-- Live Banking Calculation Script -->
     <script>
-        let time = 120; 
-        const display = document.getElementById('countdown');
-        setInterval(() => {
-            if (time > 0) {
-                time--;
-                let mins = Math.floor(time / 60).toString().padStart(2, '0');
-                let secs = (time % 60).toString().padStart(2, '0');
-                display.textContent = mins + ":" + secs;
-            } else {
-                display.textContent = "Time's Up!";
+        const balances = { maryam: 1000000, zainab: 1000000, fatima: 1000000, saad: 1000000, yahya: 1000000, abubakar: 1000000 };
+
+        function handleTransaction(type) {
+            const memberKey = document.getElementById('memberSelect').value;
+            const memberName = document.getElementById('memberSelect').options[document.getElementById('memberSelect').selectedIndex].text;
+            const amount = parseInt(document.getElementById('amountInput').value);
+            const desc = document.getElementById('descInput').value || "Family Transaction";
+            const today = new Date().toISOString().split('T')[0];
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
             }
-        }, 1000);
+
+            if (type === 'Withdrawal') {
+                balances[memberKey] -= amount;
+            } else {
+                balances[memberKey] += amount;
+            }
+
+            // Update individual layout display
+            document.getElementById(`bal-${memberKey}`).textContent = balances[memberKey].toLocaleString() + " PKR";
+
+            // Add new row to table log
+            const tbody = document.getElementById('ledgerBody');
+            const row = document.createElement('tr');
+            const badgeClass = type === 'Deposit' ? 'badge-deposit' : 'badge-withdrawal';
+            const displayAmount = type === 'Withdrawal' ? `-${amount.toLocaleString()}` : amount.toLocaleString();
+            const colorStyle = type === 'Withdrawal' ? 'style="color: #dc2626;"' : '';
+
+            row.innerHTML = `<td>${today}</td><td>${memberName}</td><td><span class="${badgeClass}">${type}</span></td><td ${colorStyle}>${displayAmount} PKR</td><td>${desc}</td>`;
+            tbody.insertBefore(row, tbody.firstChild);
+
+            // Reset inputs
+            document.getElementById('amountInput').value = '';
+            document.getElementById('descInput').value = '';
+        }
     </script>
 </body>
 </html>
